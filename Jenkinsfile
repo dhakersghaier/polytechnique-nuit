@@ -84,6 +84,8 @@ pipeline {
                         // sh "cd terraform && terraform destroy -auto-approve"
                         sh "cd terraform && terraform plan"
                         sh "cd terraform && terraform apply -auto-approve"
+                        sh "cd terraform && bash -x ./terraform_inventory.sh"
+                        sh "cd terraform && cat inventory.ini"
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error("Terraform Deployment failed: ${e.message}")
@@ -97,8 +99,6 @@ pipeline {
                 script{
                     CURRENT_STAGE = 'Ansible Deployment'
                     try {
-                        sh "cd terraform && bash -x ./terraform_inventory.sh"
-                        sh "cd terraform && cat inventory.ini"
                         sh "cd terraform && ansible-playbook -i inventory.ini ansible-playbook.yml -e \"ansible_ssh_common_args='-o StrictHostKeyChecking=no'\""
                     } catch (Exception e) {
                         currentBuild.result = 'Failure'
