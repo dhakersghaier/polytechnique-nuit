@@ -7,7 +7,7 @@ SSH_USERNAME="ec2-user"
 SSH_PRIVATE_KEY_PATH="/home/dhaker/.ssh/vue-js-app.pem"
 
 # Replace with the EC2 instance IP from Terraform output
-EC2_INSTANCE_IP=$(terraform output -raw public_ip)
+EC2_INSTANCE_IP='34.238.155.108'
 
 # Create the Ansible inventory file with SSH username and private key
 cat << EOF > inventory.ini
