@@ -66,39 +66,39 @@ pipeline {
             }
         }
 
-        // stage('Terraform & Ansible Deployment') {
-        //     steps {
-        //         script {
-        //             CURRENT_STAGE = 'Terraform & Ansible Deployment'
-        //             try {
-        //                 sh "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
-        //                 sh "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-        //                 sh "cd terraform && terraform init"
-        //                 // sh "cd terraform && terraform destroy -auto-approve"
-        //                 sh "cd terraform && terraform plan"
-        //                 sh "cd terraform && terraform apply -auto-approve"
-        //                 sh "cd terraform && bash -x ./terraform_inventory.sh"
-        //                 sh "cd terraform && cat inventory.ini"
-        //                 sh "cd terraform && ansible-playbook -i inventory.ini ansible-playbook.yml -e \"ansible_ssh_common_args='-o StrictHostKeyChecking=no'\""
+        stage('Terraform & Ansible Deployment') {
+            steps {
+                script {
+                    CURRENT_STAGE = 'Terraform & Ansible Deployment'
+                    try {
+                        sh "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+                        sh "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+                        sh "cd terraform && terraform init"
+                        // sh "cd terraform && terraform destroy -auto-approve"
+                        sh "cd terraform && terraform plan"
+                        sh "cd terraform && terraform apply -auto-approve"
+                        sh "cd terraform && bash -x ./terraform_inventory.sh"
+                        sh "cd terraform && cat inventory.ini"
+                        sh "cd terraform && ansible-playbook -i inventory.ini ansible-playbook.yml -e \"ansible_ssh_common_args='-o StrictHostKeyChecking=no'\""
 
-        //             } catch (Exception e) {
-        //                 currentBuild.result = 'FAILURE'
-        //                 error("Terraform Deployment failed: ${e.message}")
-        //             }
-        //         }
-        //     }
-        // }
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("Terraform Deployment failed: ${e.message}")
+                    }
+                }
+            }
+        }
     }
 
-    // post {
-    //     failure {
-    //         script {
-    //             def failedStageName = CURRENT_STAGE ?: "Unknown"
-    //             emailext subject: "Pipeline Failed in Stage: ${currentBuild.fullDisplayName}",
-    //                       body: "The pipeline '${currentBuild.fullDisplayName}' has failed in the '${failedStageName}' stage. Please investigate the issue.",
-    //                       to: "dhakersg@gmail.com",
-    //                       mimeType: 'text/html'
-    //         }
-    //     }
-    // }
+    post {
+        failure {
+            script {
+                def failedStageName = CURRENT_STAGE ?: "Unknown"
+                emailext subject: "Pipeline Failed in Stage: ${currentBuild.fullDisplayName}",
+                          body: "The pipeline '${currentBuild.fullDisplayName}' has failed in the '${failedStageName}' stage. Please investigate the issue.",
+                          to: "dhakersg@gmail.com",
+                          mimeType: 'text/html'
+            }
+        }
+    }
 }
