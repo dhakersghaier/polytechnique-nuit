@@ -1,0 +1,25 @@
+---
+- name: Setup Docker for Vue.js App
+  hosts: targets
+  gather_facts: false
+
+  tasks:
+    - name: Install Docker
+      become: yes
+      command: "sudo yum install docker -y"
+
+    - name: Start Docker service
+      become: yes
+      command: "sudo systemctl start docker"
+    
+    - name: Remove existing Docker container (if exists)
+      become: yes
+      command: "docker rm -f Production"
+
+    - name: Pull Docker image
+      become: yes
+      command: "docker pull dhakersg/vue-js-app:latest"
+
+    - name: Run Docker container
+      become: yes
+      command: "docker run -d -p 80:80 --name Production dhakersg/vue-js-app:latest"
