@@ -15,6 +15,10 @@ pipeline {
         VERSION = "${env.BUILD_ID}"
         SONAR_TOKEN = credentials('sonar-cube-token')
     }
+    parameters {
+    booleanParam(name: 'DEPLOY_TERRAFORM', defaultValue: false, description: 'Deploy using Terraform')
+    }
+
 
     stages {
         stage('Build') {
@@ -67,6 +71,9 @@ pipeline {
         }
 
         stage('Terraform & Ansible Deployment') {
+              when {
+                  expression { params.DEPLOY_TERRAFORM == true }
+              }
             steps {
                 script {
                     CURRENT_STAGE = 'Terraform & Ansible Deployment'
@@ -77,10 +84,6 @@ pipeline {
                         // sh "cd terraform && terraform destroy -auto-approve"
                         sh "cd terraform && terraform plan"
                         sh "cd terraform && terraform apply -auto-approve"
-                        sh "cd terraform && bash -x ./terraform_inventory.sh"
-                        sh "cd terraform && cat inventory.ini"
-                        sh "cd terraform && ansible-playbook -i inventory.ini ansible-playbook.yml -e \"ansible_ssh_common_args='-o StrictHostKeyChecking=no'\""
-
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error("Terraform Deployment failed: ${e.message}")
@@ -88,8 +91,23 @@ pipeline {
                 }
             }
         }
-    }
-
+    
+        stage('Ansible Deployment'){
+            steps {
+                script{
+                    CURRENT_STAGE = 'Ansible Deployment'
+                    try {
+                        sh "cd terraform && bash -x ./terraform_inventory.sh"
+                        sh "cd terraform && cat inventory.ini"
+                        sh "cd terraform && ansible-playbook -i inventory.ini ansible-playbook.yml -e \"ansible_ssh_common_args='-o StrictHostKeyChecking=no'\""
+                    } catch (Exception e) {
+                        currentBuild.result = 'Failure'
+                        error("ansible deployment failed: ${e.message}")
+                    }
+                }
+            }
+        }
+    }    
     post {
         failure {
             script {
