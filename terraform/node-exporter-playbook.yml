@@ -1,6 +1,6 @@
 ---
 - name: Install and configure Node Exporter
-  hosts: your_web_app_server  # Replace with your target server(s)
+  hosts: targets
   become: yes
 
   tasks:
