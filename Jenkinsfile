@@ -125,15 +125,15 @@ pipeline {
             }
         }
     }    
-    // post {
-    //     failure {
-    //         script {
-    //             def failedStageName = CURRENT_STAGE ?: "Unknown"
-    //             emailext subject: "Pipeline Failed in Stage: ${currentBuild.fullDisplayName}",
-    //                       body: "The pipeline '${currentBuild.fullDisplayName}' has failed in the '${failedStageName}' stage. Please investigate the issue.",
-    //                       to: "dhakersg@gmail.com",
-    //                       mimeType: 'text/html'
-    //         }
-    //     }
-    // }
+    post {
+        failure {
+            script {
+                def failedStageName = CURRENT_STAGE ?: "Unknown"
+                emailext subject: "Pipeline Failed in Stage: ${currentBuild.fullDisplayName}",
+                          body: "The pipeline '${currentBuild.fullDisplayName}' has failed in the '${failedStageName}' stage. Please investigate the issue.",
+                          to: "dhakersg@gmail.com",
+                          mimeType: 'text/html'
+            }
+        }
+    }
 }
