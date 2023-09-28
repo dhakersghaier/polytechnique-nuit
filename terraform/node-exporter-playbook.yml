@@ -57,9 +57,3 @@
       systemd:
         name: node_exporter
         state: started
-
-    - name: Check Node Exporter service status
-      systemd:
-        name: node_exporter
-        enabled: yes
-        state: status

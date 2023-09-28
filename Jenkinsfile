@@ -115,7 +115,7 @@ pipeline {
                         sh "cd terraform && ansible-playbook -i inventory.ini node-exporter-playbook.yml -e \"ansible_ssh_common_args='-o StrictHostKeyChecking=no'\""
                     } catch (Exception e) {
                         currentBuild.result = 'Failure'
-                        error("ansible deployment failed: ${e.message}")
+                        error("node-exporter playbook: ${e.message}")
                     }
                 }
             }
