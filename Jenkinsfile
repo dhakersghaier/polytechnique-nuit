@@ -17,6 +17,7 @@ pipeline {
     }
     parameters {
     booleanParam(name: 'DEPLOY_TERRAFORM', defaultValue: false, description: 'Deploy using Terraform')
+    booleanParam(name: 'node_exporter', defaultValue: false, description: 'intsalling node exporter')
     }
 
 
@@ -108,6 +109,9 @@ pipeline {
             }
         }
         stage('node-exporter playbook'){
+              when {
+                  expression { params.node_exporter == true }
+              }
             steps {
                 script{
                     CURRENT_STAGE = 'Ansible Deployment'
