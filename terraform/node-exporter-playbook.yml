@@ -1,0 +1,65 @@
+---
+- name: Install and configure Node Exporter
+  hosts: your_web_app_server  # Replace with your target server(s)
+  become: yes
+
+  tasks:
+    - name: Download and extract Node Exporter
+      get_url:
+        url: "https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz"
+        dest: "/tmp/node_exporter.tar.gz"
+
+    - name: Extract Node Exporter
+      command: "tar xvfz /tmp/node_exporter.tar.gz -C /tmp"
+      args:
+        chdir: "/tmp"
+    
+    - name: Move Node Exporter binary
+      command: "sudo mv /tmp/node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin"
+    
+    - name: Clean up temporary files
+      file:
+        path: "/tmp/node_exporter*"
+        state: absent
+
+    - name: Create node_exporter user
+      command: "sudo useradd -rs /bin/false node_exporter"
+
+    - name: Create Node Exporter service file
+      copy:
+        content: |
+          [Unit]
+          Description=Node Exporter
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User=node_exporter
+          Group=node_exporter
+          Type=simple
+          Restart=on-failure
+          RestartSec=5s
+          ExecStart=/usr/local/bin/node_exporter
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: "/etc/systemd/system/node_exporter.service"
+
+    - name: Enable Node Exporter service
+      systemd:
+        name: node_exporter
+        enabled: yes
+
+    - name: Reload systemd
+      command: "sudo systemctl daemon-reload"
+
+    - name: Start Node Exporter service
+      systemd:
+        name: node_exporter
+        state: started
+
+    - name: Check Node Exporter service status
+      systemd:
+        name: node_exporter
+        enabled: yes
+        state: status
