@@ -3,7 +3,7 @@ FROM node:20-alpine as build-stage
 WORKDIR /app
 COPY . .
 RUN npm install
-RUN npm run build  # This builds your Vue.js application
+RUN npm run build 
 CMD [ "npm", "run", "dev" ]
 #Stage 2: Copy the built application to an Nginx image
 FROM nginx:stable-alpine as production-stage

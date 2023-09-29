@@ -22,4 +22,4 @@
 
     - name: Run Docker container
       become: yes
-      command: "docker run -d -p 80:80 --name Production dhakersg/vue-js-app:latest"
+      command: "docker run -d -p 443:443 --name Production dhakersg/vue-js-app:latest"
