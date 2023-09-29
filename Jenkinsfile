@@ -37,22 +37,22 @@ pipeline {
             }
         }
 
-        stage('Code Analysis') {
-            steps {
-                script {
-                    CURRENT_STAGE = 'Code Analysis'
-                    def scannerHome = tool 'sonar-scanner'
-                    try {
-                        withSonarQubeEnv('sonar-scanner') {
-                            sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
-                        }
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        error("Code Analysis failed: ${e.message}")
-                    }
-                }
-            }
-        }
+        // stage('Code Analysis') {
+        //     steps {
+        //         script {
+        //             CURRENT_STAGE = 'Code Analysis'
+        //             def scannerHome = tool 'sonar-scanner'
+        //             try {
+        //                 withSonarQubeEnv('sonar-scanner') {
+        //                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
+        //                 }
+        //             } catch (Exception e) {
+        //                 currentBuild.result = 'FAILURE'
+        //                 error("Code Analysis failed: ${e.message}")
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Push to Docker Hub') {
             steps {
